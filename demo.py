@@ -61,8 +61,8 @@ if __name__ == "__main__":
 
     # The training set. We have 4 examples, each consisting of 3 input values
     # and 1 output value.
-    training_set_inputs = array([[-9, 8, -6], [-6, 5, 10], [-4, 0, 8], [0, 4, 7]])
-    training_set_outputs = array([[10, -10, 5, -5]]).T
+    training_set_inputs = array([[1, 1, 0], [0, 0, 1], [1, 1, 1], [1, 0, 1]])
+    training_set_outputs = array([[1, 0, 0, 1]]).T
 
     # Train the neural network using a training set.
     # Do it 10,000 times and make small adjustments each time.
@@ -73,4 +73,4 @@ if __name__ == "__main__":
 
     # Test the neural network with a new situation.
     print("Considering new situation [1, 0, 0] -> ?:")
-    print(neural_network.think(array([100,0,-0])))
+    print(neural_network.think(array([0,1,1])))
