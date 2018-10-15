@@ -1,5 +1,6 @@
 
 import numpy as np
+import csv
 
 # X = (Approved in past trimester, Number of evaluations), y = Students Approved 
 X = np.array(([20,3], [14,4], [5,3]), dtype=float)
@@ -9,6 +10,17 @@ y = np.array(([23], [16], [2]), dtype=float)
 X = X/np.amax(X, axis=0)
 y = y/25 #Max test score is 100
 
+dates = []
+prices = []
+
+def get_data(filename):
+    with open(filename, 'r') as csvfile:
+        csvFileReader = csv.reader(csvfile)
+        next(csvFileReader) # skipping column names
+        for row in csvFileReader:
+            #dates.append(int(row[0].split('-')[0]))
+            prices.append(float(row[0]))
+    return
 
 
 class Neural_Network(object):
@@ -150,3 +162,6 @@ if __name__ == "__main__":
     numerito = float(input("el nuevo valor "))
     num = NN.forward(np.array([numerito,3],dtype=float))
     print(np.rint(num*25))
+
+    get_data('sp500.csv')
+    print (prices)
