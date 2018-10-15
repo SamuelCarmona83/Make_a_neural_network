@@ -2,6 +2,9 @@
 import numpy as np
 import csv
 
+
+
+
 # X = (Approved in past trimester, Number of evaluations), y = Students Approved 
 X = np.array(([20,3], [14,4], [5,3]), dtype=float)
 y = np.array(([23], [16], [2]), dtype=float)
@@ -11,24 +14,51 @@ X = X/np.amax(X, axis=0)
 y = y/25 #Max test score is 100
 
 dates = []
-prices = []
+
+prices  = [] # precios de cierre de la accion de google
+prices1 = [] # precios apertura de la accion de google
+prices2 = [] # precios de la accion de apple
+prices3 = [] # precios de la accion de facebook
+
+
+results= []
 
 def get_data(filename):
     with open(filename, 'r') as csvfile:
         csvFileReader = csv.reader(csvfile)
         next(csvFileReader) # skipping column names
+        line_count = 0
         for row in csvFileReader:
-            #dates.append(int(row[0].split('-')[0]))
-            prices.append(float(row[0]))
+            if line_count > 0:
+                prices1.append(float(row[1]))
+                prices2.append(float(row[2]))
+                prices3.append(float(row[3]))
+                prices.append(float(row[4]))
+            line_count += 1
+
     return
 
+
+def write_data(filename, R ):
+    with open(filename, 'w') as csvfile:
+        fieldnames = ['number', 'result']
+        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+        writer.writeheader()
+        for x in range( len(R) ):
+
+            if x==0:
+                writer.writerow( {'number': x, 'result': round(R[x],4) } )
+            else:
+                writer.writerow( {'number': x, 'result': round(R[x]-abs(R[x-1]),4) } )
+
+    return
 
 class Neural_Network(object):
     def __init__(self):        
         #Define Hyperparameters
-        self.inputLayerSize = 2
+        self.inputLayerSize = 3
         self.outputLayerSize = 1
-        self.hiddenLayerSize = 3
+        self.hiddenLayerSize = 3#8
         
         #Weights (parameters)
         self.W1 = np.random.randn(self.inputLayerSize,self.hiddenLayerSize)
@@ -44,7 +74,6 @@ class Neural_Network(object):
         self.a2 = self.sigmoid(self.z2)
         self.z3 = np.dot(self.a2, self.W2)
         yHat = self.sigmoid(self.z3) 
-        print(yHat)
         return yHat
         
     def sigmoid(self, z):
@@ -155,18 +184,35 @@ class trainer(object):
         
 if __name__ == "__main__":
     print("")
-    NN = Neural_Network()
-    T = trainer(NN)
-    T.train(X,y)
+    #NN = Neural_Network()
+    #T = trainer(NN)
+    #T.train(X,y)
     # Z = Vector de entrada al Sistema
-    Z = np.array(([15,3],[2,4],[5,3],[0,3]), dtype=float)
-    z = NN.forward(Z)
-    print("")
-    print(np.rint(z*25))
-    print("")
-    numerito = float(input("el nuevo valor "))
-    num = NN.forward(np.array([numerito,3],dtype=float))
-    print(np.rint(num*25))
+    #Z = np.array(([15,3],[2,4],[5,3],[0,3]), dtype=float)
+    #z = NN.forward(Z)
+    #print("")
+    #print(np.rint(z*25))
+    #print("")
+    #numerito = float(input("el nuevo valor "))
+    #num = NN.forward(np.array([numerito,3],dtype=float))
+    #print(np.rint(num*25))
 
-    get_data('sp500.csv')
-    print (prices)
+    ### Entrand los datos del archivo de texto
+    get_data('RNA.csv')
+    ### Se normalizan los datos
+    prices = prices/np.amax(prices, axis=0)
+    prices1 = prices1/np.amax(prices1, axis=0)
+    prices2 = prices2/np.amax(prices2, axis=0)
+    prices3 = prices3/np.amax(prices3, axis=0)
+    ### Entrenamiento
+
+    ### Evaluacion
+
+    ### Prediccion del dia anterior
+        #imputs valor, Prices1[len(Prices1-1)],Prices2[len(Prices2-1)],Prices3[len(Prices3-1)]
+
+
+
+
+    #write_data('results.csv',prices)
+
