@@ -49,7 +49,7 @@ def write_data(filename, R ):
             if x==0:
                 writer.writerow( {'number': x, 'result': round(R[x],4) } )
             else:
-                writer.writerow( {'number': x, 'result': round(R[x]-abs(R[x-1]),4) } )
+                writer.writerow( {'number': x, 'result': round(100*R[x]-abs(100*R[x-1]),4) } )
 
     return
 
@@ -57,8 +57,9 @@ class Neural_Network(object):
     def __init__(self):        
         #Define Hyperparameters
         self.inputLayerSize = 3
+        #self.inputLayerSize = 3
         self.outputLayerSize = 1
-        self.hiddenLayerSize = 3#8
+        self.hiddenLayerSize = 2#8
         
         #Weights (parameters)
         self.W1 = np.random.randn(self.inputLayerSize,self.hiddenLayerSize)
@@ -184,8 +185,10 @@ class trainer(object):
         
 if __name__ == "__main__":
     print("")
-    #NN = Neural_Network()
-    #T = trainer(NN)
+    NN = Neural_Network()
+    T = trainer(NN)
+
+
     #T.train(X,y)
     # Z = Vector de entrada al Sistema
     #Z = np.array(([15,3],[2,4],[5,3],[0,3]), dtype=float)
@@ -206,13 +209,22 @@ if __name__ == "__main__":
     prices3 = prices3/np.amax(prices3, axis=0)
     ### Entrenamiento
 
+    NN = Neural_Network()
+    T = trainer(NN)
+    for y in range(0,len(prices)-1,3):
+        Y = []
+        P = []
+        Y = np.array(( [prices1[y], prices2[y], prices3[y]],[prices1[y+1], prices2[y+1], prices3[y+1]],[prices1[y+2], prices2[y+2], prices3[y+2]] ) ,dtype=float)
+        P = np.array(([prices[y]],[prices[y+1]],[prices[y+2]]), dtype=float)
+        T.train(Y,P)
+
+
     ### Evaluacion
 
     ### Prediccion del dia anterior
         #imputs valor, Prices1[len(Prices1-1)],Prices2[len(Prices2-1)],Prices3[len(Prices3-1)]
+        
 
 
-
-
-    #write_data('results.csv',prices)
+    write_data('results.csv',prices)
 
