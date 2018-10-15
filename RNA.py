@@ -175,7 +175,7 @@ class trainer(object):
         
         params0 = self.N.getParams()
 
-        options = {'maxiter': 200, 'disp' : True}
+        options = {'maxiter': 100} #'disp' : True para mostrar mensajes de convergencia
         _res = optimize.minimize(self.costFunctionWrapper, params0, jac=True, method='BFGS', \
                                  args=(X, y), options=options, callback=self.callbackF)
 
@@ -187,19 +187,7 @@ if __name__ == "__main__":
     print("")
     NN = Neural_Network()
     T = trainer(NN)
-
-
-    #T.train(X,y)
-    # Z = Vector de entrada al Sistema
-    #Z = np.array(([15,3],[2,4],[5,3],[0,3]), dtype=float)
-    #z = NN.forward(Z)
-    #print("")
-    #print(np.rint(z*25))
-    #print("")
-    #numerito = float(input("el nuevo valor "))
-    #num = NN.forward(np.array([numerito,3],dtype=float))
-    #print(np.rint(num*25))
-
+    ### coñño recuerda que la salida se multiplica por el rango y se resta por el desplazamiento
     ### Entrand los datos del archivo de texto
     get_data('RNA.csv')
     ### Se normalizan los datos
@@ -218,12 +206,20 @@ if __name__ == "__main__":
         P = np.array(([prices[y]],[prices[y+1]],[prices[y+2]]), dtype=float)
         T.train(Y,P)
 
-
+    Mañana = 1102.44
+    Hoy = Mañana/np.amax(prices1, axis=0)
     ### Evaluacion
-
+    Z = np.array(([Hoy,prices2[len(prices)-1],prices3[len(prices)-1]]), dtype=float)
+    z = NN.forward(Z)
+    print("")
+    print("El valor de la accion variara un % :")
+    print(z*6-3)
+    print("")
+    print("El valor de la accion mañana sera de :")
+    print(round(((1+(z[0]*6-3)/100)*Mañana),2))
     ### Prediccion del dia anterior
         #imputs valor, Prices1[len(Prices1-1)],Prices2[len(Prices2-1)],Prices3[len(Prices3-1)]
-        
+
 
 
     write_data('results.csv',prices)
