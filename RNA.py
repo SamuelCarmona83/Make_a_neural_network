@@ -146,3 +146,7 @@ if __name__ == "__main__":
     z = NN.forward(Z)
     print("")
     print(np.rint(z*25))
+    print("")
+    numerito = float(input("el nuevo valor "))
+    num = NN.forward(np.array([numerito,3],dtype=float))
+    print(np.rint(num*25))
