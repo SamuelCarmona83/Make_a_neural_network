@@ -32,14 +32,19 @@ class Neural_Network(object):
         
         #Weights (parameters)
         self.W1 = np.random.randn(self.inputLayerSize,self.hiddenLayerSize)
+        print(self.W1)
+        print("")
         self.W2 = np.random.randn(self.hiddenLayerSize,self.outputLayerSize)
-        
+        print(self.W2)
+        print("")
+
     def forward(self, X):
-        #Propogate inputs though network
+        #Propogate inputs though network nhidden - 1 dots
         self.z2 = np.dot(X, self.W1)
         self.a2 = self.sigmoid(self.z2)
         self.z3 = np.dot(self.a2, self.W2)
         yHat = self.sigmoid(self.z3) 
+        print(yHat)
         return yHat
         
     def sigmoid(self, z):

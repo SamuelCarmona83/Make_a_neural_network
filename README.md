@@ -8,10 +8,11 @@ This is the code for [this](https://youtu.be/p69khggr1Jo) video by Siraj Raval o
 ##Dependencies
 
 None! Just numpy.
+	"py -m pip install numpy spicy csv "
 
 ##Usage
 
-Run ``python demo.py`` in terminal to see it train, then predict.
+Run ``py RNA.py`` in terminal to see it train, then predict.
 
 ##Challenge
 
