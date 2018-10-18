@@ -3,18 +3,6 @@ import numpy as np
 import csv
 
 
-
-
-# X = (Approved in past trimester, Number of evaluations), y = Students Approved 
-X = np.array(([20,3], [14,4], [5,3]), dtype=float)
-y = np.array(([23], [16], [2]), dtype=float)
-
-# Normalize
-X = X/np.amax(X, axis=0)
-y = y/25 #Max test score is 100
-
-dates = []
-
 prices  = [] # precios de cierre de la accion de google
 prices1 = [] # precios apertura de la accion de google
 prices2 = [] # precios de la accion de apple
