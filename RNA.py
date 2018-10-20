@@ -45,11 +45,11 @@ def write_data(filename, R ):
         fieldnames = ['number', 'result']
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
         writer.writeheader()
-        for x in range( len(R) ):
-            if x==0:
-                writer.writerow( {'number': x, 'result': np.round(R[x],4) } )
-            else:
+        for x in range( len(R)):
+            if x>0:
                 writer.writerow( {'number': x, 'result': np.round(float(R[x]),4) } )
+            #else:
+            #   writer.writerow( {'number': x, 'result': np.round(float(R[x]),4) } )
     return
 
 class Neural_Network(object):
@@ -186,7 +186,7 @@ if __name__ == "__main__":
     T = trainer(NN)
     ### coñño recuerda que la salida se multiplica por el rango y se resta por el desplazamiento
     ### Entrand los datos del archivo de texto
-    get_data('RNA.csv')
+    get_data('RNA2.csv')
     ### Se normalizan los datos
     #prices = prices/np.amax(prices, axis=0)
     varianzag = varianzag/np.amax(varianzag, axis=0) # precios de cierre de la accion de google
@@ -206,7 +206,8 @@ if __name__ == "__main__":
         T.train(Y,P)
 
     print("Entrenamiento Completado")
-    get_data_test('Entrenamiento.csv')
+
+    get_data_test('Entrenamiento2.csv') # toma los datos de este archivo para realizar la prediccion
 
     preciofn = preciofn/np.amax(preciofn, axis=0)# precios de la accion de apple
     precioan = precioan/np.amax(precioan, axis=0)
@@ -234,7 +235,7 @@ if __name__ == "__main__":
         vara = variacionmañana-vara
         #Hoye = Hoye+(1+vara)*Hoye
 
-    write_data('pronosticos.csv',results)
+    write_data('pronosticos.csv',results) # muestra los resultados
 
 
     #print(round(((1+(z)/100)*Hoy),2))
