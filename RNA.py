@@ -173,7 +173,7 @@ class trainer(object):
         
         params0 = self.N.getParams()
 
-        options = {'maxiter': 100} #'disp' : True para mostrar mensajes de convergencia
+        options = {'maxiter': 200} #'disp' : True para mostrar mensajes de convergencia
         _res = optimize.minimize(self.costFunctionWrapper, params0, jac=True, method='BFGS', \
                                  args=(X, y), options=options, callback=self.callbackF)
 
@@ -205,24 +205,36 @@ if __name__ == "__main__":
         Y = np.array(( [varianzag[y],preciog[y], precioa[y], preciof[y]],[varianzag[y+1],preciog[y+1], precioa[y+1], preciof[y+1]],[varianzag[y+2],preciog[y+2], precioa[y+2], preciof[y+2]] ) ,dtype=float)
         P = np.array(([preciom[y]],[preciom[y+1]],[preciom[y+2]]), dtype=float)
         T.train(Y,P)
+
     print("Entrenamiento Completado")
     get_data_test('Entrenamiento.csv')
-    preciofn = preciofn/np.amax(preciofn, axis=0)# precios de la accion de apple
-    precioaa = precioan/np.amax(precioan, axis=0)
 
-    Hoy = preciog[len(preciog)-1]
-    Hoye = Hoy/np.amax(preciog, axis=0)
-    ### Evaluacion
-    Z = np.array( ([varianzag[len(varianzag)-1],Hoye,precioan[0],preciofn[0]]) ,dtype=float)
-    print(Z)
-    z = NN.forward(Z)
-    print("")
-    vara = np.amax(varianzag, axis=0)
-    print("El valor de la accion variara un % :")
-    print((1-z)*vara-(vara/2))
-    print("")
-    print("El valor de la accion mañana sera de :")
-    print(round(((1+(z[0])/100)*Hoy),2))
+    preciofn = preciofn/np.amax(preciofn, axis=0)# precios de la accion de apple
+    precioan = precioan/np.amax(precioan, axis=0)
+    vara = varianzag[len(varianzag)-1 ]
+    Hoy = preciog[len(preciog)-1]/(np.amax(preciog, axis=0))
+    print(vara)
+    varmax = np.amax(abs(varianzag), axis=0)
+    Hoye = Hoy
+
+    for x in range(1,len(precioan)):  
+        ### Evaluacion
+
+        Z = np.array( ([vara,Hoye,precioan[x],preciofn[x]]) ,dtype=float)
+        print(Z)
+        z = NN.forward(Z)
+        #print("")
+        #print("El valor de la accion variara un % :")
+        variacionmañana=((1-z))
+        #print(variacionmañana)
+        #print("El valor de la accion mañana sera de :")
+        #Mañana = Hoy+variacionmañana*Hoy
+        #print(Mañana)
+        vara = variacionmañana-vara
+        #Hoye = Hoye+variacionmañana*Hoye
+
+
+    #print(round(((1+(z)/100)*Hoy),2))
     ### Prediccion del dia anterior
         #imputs valor, Prices1[len(Prices1-1)],Prices2[len(Prices2-1)],Prices3[len(Prices3-1)]
     #write_data('results.csv',prices)
