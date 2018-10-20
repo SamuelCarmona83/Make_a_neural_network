@@ -3,13 +3,12 @@ import numpy as np
 import csv
 
 
-prices  = [] # precios de cierre de la accion de google
-prices1 = [] # precios apertura de la accion de google
-prices2 = [] # precios de la accion de apple
-prices3 = [] # precios de la accion de facebook
-
-
-results= []
+varianzag = [] # precios de cierre de la accion de google
+preciog = [] # precios apertura de la accion de google
+preciom = [] # precios de la accion de google mañana
+preciof = [] # precios de la accion de apple
+precioa = [] # precios de la accion de facebook
+results = [] # resultados de algo
 
 def get_data(filename):
     with open(filename, 'r') as csvfile:
@@ -18,12 +17,12 @@ def get_data(filename):
         line_count = 0
         for row in csvFileReader:
             if line_count > 0:
-                prices1.append(float(row[1]))
-                prices2.append(float(row[2]))
-                prices3.append(float(row[3]))
-                prices.append(float(row[4]))
+                varianzag.append(float(row[0]))#varianza
+                preciog.append(float(row[1]))#PAGH
+                preciom.append(float(row[2])) #PAGM
+                preciof.append(float(row[3]))#PAFH
+                precioa.append(float(row[4])) #PAAH
             line_count += 1
-
     return
 
 
@@ -33,7 +32,6 @@ def write_data(filename, R ):
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
         writer.writeheader()
         for x in range( len(R) ):
-
             if x==0:
                 writer.writerow( {'number': x, 'result': round(R[x],4) } )
             else:
@@ -44,8 +42,7 @@ def write_data(filename, R ):
 class Neural_Network(object):
     def __init__(self):        
         #Define Hyperparameters
-        self.inputLayerSize = 3
-        #self.inputLayerSize = 3
+        self.inputLayerSize = 4
         self.outputLayerSize = 1
         self.hiddenLayerSize = 2#8
         
@@ -113,11 +110,11 @@ def computeNumericalGradient(N, X, y):
         paramsInitial = N.getParams()
         numgrad = np.zeros(paramsInitial.shape)
         perturb = np.zeros(paramsInitial.shape)
-        e = 1e-4
+        e = 1e-4 # error tolerado
 
         for p in range(len(paramsInitial)):
             #Set perturbation vector
-            perturb[p] = e
+            perturb[p] = e 
             N.setParams(paramsInitial + perturb)
             loss2 = N.costFunction(X, y)
             
@@ -132,7 +129,6 @@ def computeNumericalGradient(N, X, y):
             
         #Return Params to original value:
         N.setParams(paramsInitial)
-
         return numgrad 
         
 from scipy import optimize
@@ -179,36 +175,36 @@ if __name__ == "__main__":
     ### Entrand los datos del archivo de texto
     get_data('RNA.csv')
     ### Se normalizan los datos
-    prices = prices/np.amax(prices, axis=0)
-    prices1 = prices1/np.amax(prices1, axis=0)
-    prices2 = prices2/np.amax(prices2, axis=0)
-    prices3 = prices3/np.amax(prices3, axis=0)
+    #prices = prices/np.amax(prices, axis=0)
+    varianzag = varianzag/np.amax(varianzag, axis=0) # precios de cierre de la accion de google
+    preciog = preciog/np.amax(preciog, axis=0) # precios apertura de la accion de google
+    preciom = preciom/np.amax(preciom, axis=0) # precios de la accion de google mañana
+    preciof = preciof/np.amax(preciof, axis=0)# precios de la accion de apple
+    precioa = precioa/np.amax(precioa, axis=0)
     ### Entrenamiento
 
     NN = Neural_Network()
     T = trainer(NN)
-    for y in range(0,len(prices)-1,3):
+    for y in range(0,len(varianzag)-1,3):
         Y = []
         P = []
-        Y = np.array(( [prices1[y], prices2[y], prices3[y]],[prices1[y+1], prices2[y+1], prices3[y+1]],[prices1[y+2], prices2[y+2], prices3[y+2]] ) ,dtype=float)
-        P = np.array(([prices[y]],[prices[y+1]],[prices[y+2]]), dtype=float)
+        Y = np.array(( [varianzag[y],preciog[y], precioa[y], preciof[y]],[varianzag[y+1],preciog[y+1], precioa[y+1], preciof[y+1]],[varianzag[y+2],preciog[y+2], precioa[y+2], preciof[y+2]] ) ,dtype=float)
+        P = np.array(([preciom[y]],[preciom[y+1]],[preciom[y+2]]), dtype=float)
         T.train(Y,P)
 
-    Mañana = 1102.44
-    Hoy = Mañana/np.amax(prices1, axis=0)
+    print (precioa)
+    #Mañana = 1102.44
+    #Hoy = Mañana/np.amax(prices1, axis=0)
     ### Evaluacion
-    Z = np.array(([Hoy,prices2[len(prices)-1],prices3[len(prices)-1]]), dtype=float)
-    z = NN.forward(Z)
-    print("")
-    print("El valor de la accion variara un % :")
-    print(z*6-3)
-    print("")
-    print("El valor de la accion mañana sera de :")
-    print(round(((1+(z[0]*6-3)/100)*Mañana),2))
+    #Z = np.array(([Hoy,prices2[len(prices)-1],prices3[len(prices)-1]]), dtype=float)
+    #z = NN.forward(Z)
+    #print("")
+    #print("El valor de la accion variara un % :")
+    #print(z*6-3)
+    #print("")
+    #print("El valor de la accion mañana sera de :")
+    #print(round(((1+(z[0]*6-3)/100)*Mañana),2))
     ### Prediccion del dia anterior
         #imputs valor, Prices1[len(Prices1-1)],Prices2[len(Prices2-1)],Prices3[len(Prices3-1)]
-
-
-
-    write_data('results.csv',prices)
+    #write_data('results.csv',prices)
 
