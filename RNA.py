@@ -9,6 +9,8 @@ preciom = [] # precios de la accion de google mañana
 preciof = [] # precios de la accion de apple
 precioa = [] # precios de la accion de facebook
 results = [] # resultados de algo
+preciofn = [] # precios de la accion de apple
+precioan = [] # precios de la accion de facebook
 
 def get_data(filename):
     with open(filename, 'r') as csvfile:
@@ -22,6 +24,18 @@ def get_data(filename):
                 preciom.append(float(row[2])) #PAGM
                 preciof.append(float(row[3]))#PAFH
                 precioa.append(float(row[4])) #PAAH
+            line_count += 1
+    return
+
+def get_data_test(filename):
+    with open(filename, 'r') as csvfile:
+        csvFileReader = csv.reader(csvfile)
+        next(csvFileReader) # skipping column names
+        line_count = 0
+        for row in csvFileReader:
+            if line_count > 0:
+                preciofn.append(float(row[3]))#PAFH
+                precioan.append(float(row[4])) #PAAH
             line_count += 1
     return
 
@@ -191,19 +205,24 @@ if __name__ == "__main__":
         Y = np.array(( [varianzag[y],preciog[y], precioa[y], preciof[y]],[varianzag[y+1],preciog[y+1], precioa[y+1], preciof[y+1]],[varianzag[y+2],preciog[y+2], precioa[y+2], preciof[y+2]] ) ,dtype=float)
         P = np.array(([preciom[y]],[preciom[y+1]],[preciom[y+2]]), dtype=float)
         T.train(Y,P)
+    print("Entrenamiento Completado")
+    get_data_test('Entrenamiento.csv')
+    preciofn = preciofn/np.amax(preciofn, axis=0)# precios de la accion de apple
+    precioaa = precioan/np.amax(precioan, axis=0)
 
-    print (precioa)
-    #Mañana = 1102.44
-    #Hoy = Mañana/np.amax(prices1, axis=0)
+    Hoy = 1102.44
+    Hoye = Hoy/np.amax(preciog, axis=0)
     ### Evaluacion
-    #Z = np.array(([Hoy,prices2[len(prices)-1],prices3[len(prices)-1]]), dtype=float)
-    #z = NN.forward(Z)
-    #print("")
-    #print("El valor de la accion variara un % :")
-    #print(z*6-3)
-    #print("")
-    #print("El valor de la accion mañana sera de :")
-    #print(round(((1+(z[0]*6-3)/100)*Mañana),2))
+    Z = np.array( ([varianzag[len(varianzag)-1],Hoye,precioan[0],preciofn[0]]) ,dtype=float)
+    print(Z)
+    z = NN.forward(Z)
+    print("")
+    vara = np.amax(varianzag, axis=0)
+    print("El valor de la accion variara un % :")
+    print((1-z)*vara-(vara/2))
+    print("")
+    print("El valor de la accion mañana sera de :")
+    print(round(((1+(z[0])/100)*Hoy),2))
     ### Prediccion del dia anterior
         #imputs valor, Prices1[len(Prices1-1)],Prices2[len(Prices2-1)],Prices3[len(Prices3-1)]
     #write_data('results.csv',prices)
