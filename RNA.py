@@ -47,10 +47,9 @@ def write_data(filename, R ):
         writer.writeheader()
         for x in range( len(R) ):
             if x==0:
-                writer.writerow( {'number': x, 'result': round(R[x],4) } )
+                writer.writerow( {'number': x, 'result': np.round(R[x],4) } )
             else:
-                writer.writerow( {'number': x, 'result': round(100*R[x]-abs(100*R[x-1]),4) } )
-
+                writer.writerow( {'number': x, 'result': np.round(float(R[x]),4) } )
     return
 
 class Neural_Network(object):
@@ -216,22 +215,26 @@ if __name__ == "__main__":
     print(vara)
     varmax = np.amax(abs(varianzag), axis=0)
     Hoye = Hoy
-
+    Actual = 851.08
     for x in range(1,len(precioan)):  
         ### Evaluacion
 
         Z = np.array( ([vara,Hoye,precioan[x],preciofn[x]]) ,dtype=float)
-        print(Z)
+        #print(np.round(Z,6))
         z = NN.forward(Z)
-        #print("")
+        print("")
         #print("El valor de la accion variara un % :")
         variacionmañana=((1-z))
-        #print(variacionmañana)
+        print(x)
+        print(vara)
         #print("El valor de la accion mañana sera de :")
-        #Mañana = Hoy+variacionmañana*Hoy
-        #print(Mañana)
+        Actual =(1+vara)*Actual
+        print(Actual)
+        results.append(Actual)
         vara = variacionmañana-vara
-        #Hoye = Hoye+variacionmañana*Hoye
+        #Hoye = Hoye+(1+vara)*Hoye
+
+    write_data('pronosticos.csv',results)
 
 
     #print(round(((1+(z)/100)*Hoy),2))
