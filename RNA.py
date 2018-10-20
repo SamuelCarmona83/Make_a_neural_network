@@ -210,7 +210,7 @@ if __name__ == "__main__":
     preciofn = preciofn/np.amax(preciofn, axis=0)# precios de la accion de apple
     precioaa = precioan/np.amax(precioan, axis=0)
 
-    Hoy = 1102.44
+    Hoy = preciog[len(preciog)-1]
     Hoye = Hoy/np.amax(preciog, axis=0)
     ### Evaluacion
     Z = np.array( ([varianzag[len(varianzag)-1],Hoye,precioan[0],preciofn[0]]) ,dtype=float)
