@@ -187,7 +187,7 @@ if __name__ == "__main__":
     get_data('RNA.csv')
 
     varmax = np.amax(varianzag, axis=0)
-    varianzag = varianzag/np.amax(varianzag, axis=0)
+    #varianzag = varianzag/np.amax(varianzag, axis=0)
     preciog = preciog/np.amax(preciog, axis=0)
     preciom = preciom/np.amax(preciom, axis=0)
     preciof = preciof/np.amax(preciof, axis=0)
