@@ -47,7 +47,7 @@ def write_data(filename, R ):
         writer.writeheader()
         for x in range( len(R)):
             if x>0:
-                writer.writerow( {'number': x, 'result': np.round(float(R[x]),4) } )
+                writer.writerow( {'number': x, 'result': np.round(float(R[x]),12) } )
             #else:
             #   writer.writerow( {'number': x, 'result': np.round(float(R[x]),4) } )
     return
@@ -184,62 +184,57 @@ if __name__ == "__main__":
     print("")
     NN = Neural_Network()
     T = trainer(NN)
-    ### coñño recuerda que la salida se multiplica por el rango y se resta por el desplazamiento
-    ### Entrand los datos del archivo de texto
-    get_data('RNA2.csv')
-    ### Se normalizan los datos
-    #prices = prices/np.amax(prices, axis=0)
-    varianzag = varianzag/np.amax(varianzag, axis=0) # precios de cierre de la accion de google
-    preciog = preciog/np.amax(preciog, axis=0) # precios apertura de la accion de google
-    preciom = preciom/np.amax(preciom, axis=0) # precios de la accion de google mañana
-    preciof = preciof/np.amax(preciof, axis=0)# precios de la accion de apple
+    get_data('RNA.csv')
+
+    varmax = np.amax(varianzag, axis=0)
+    varianzag = varianzag/np.amax(varianzag, axis=0)
+    preciog = preciog/np.amax(preciog, axis=0)
+    preciom = preciom/np.amax(preciom, axis=0)
+    preciof = preciof/np.amax(preciof, axis=0)
     precioa = precioa/np.amax(precioa, axis=0)
-    ### Entrenamiento
+
+
 
     NN = Neural_Network()
     T = trainer(NN)
     for y in range(0,len(varianzag)-1,3):
         Y = []
         P = []
-        Y = np.array(( [varianzag[y],preciog[y], precioa[y], preciof[y]],[varianzag[y+1],preciog[y+1], precioa[y+1], preciof[y+1]],[varianzag[y+2],preciog[y+2], precioa[y+2], preciof[y+2]] ) ,dtype=float)
-        P = np.array(([preciom[y]],[preciom[y+1]],[preciom[y+2]]), dtype=float)
+        Y = np.array(( [preciom[y],preciog[y], precioa[y], preciof[y]],[preciom[y+1],preciog[y+1], precioa[y+1], preciof[y+1]],[preciom[y+2],preciog[y+2], precioa[y+2], preciof[y+2]] ) ,dtype=float)
+        P = np.array(([varianzag[y]],[varianzag[y+1]],[varianzag[y+2]]), dtype=float)
         T.train(Y,P)
 
     print("Entrenamiento Completado")
 
-    get_data_test('Entrenamiento2.csv') # toma los datos de este archivo para realizar la prediccion
+    get_data_test('Entrenamiento.csv') 
 
-    preciofn = preciofn/np.amax(preciofn, axis=0)# precios de la accion de apple
+    preciofn = preciofn/np.amax(preciofn, axis=0)
     precioan = precioan/np.amax(precioan, axis=0)
     vara = varianzag[len(varianzag)-1 ]
     Hoy = preciog[len(preciog)-1]/(np.amax(preciog, axis=0))
+
     print(vara)
-    varmax = np.amax(abs(varianzag), axis=0)
+    print(varmax)
     Hoye = Hoy
     Actual = 851.08
-    for x in range(1,len(precioan)):  
-        ### Evaluacion
 
-        Z = np.array( ([vara,Hoye,precioan[x],preciofn[x]]) ,dtype=float)
-        #print(np.round(Z,6))
-        z = NN.forward(Z)
+    for x in range(1,len(precioan)):  
+
         print("")
-        #print("El valor de la accion variara un % :")
-        variacionmañana=((1-z))
-        print(x)
-        print(vara)
-        #print("El valor de la accion mañana sera de :")
-        Actual =(1+vara)*Actual
-        print(Actual)
+        Z = np.array( ([vara,Hoye,precioan[x],preciofn[x]]) ,dtype=float)
+        z = NN.forward(Z)
+        #print(Z)
+        #print(vara,x,"Entrada")
+        variacionmañana=((z)*varmax-(varmax/2))
+        #print(variacionmañana,"Salida")
+        Actual =(1+variacionmañana)*Actual
+        print(Actual,"Precio")
         results.append(Actual)
-        vara = variacionmañana-vara
-        #Hoye = Hoye+(1+vara)*Hoye
+        vara = variacionmañana
+        Hoye = Hoye*(1+variacionmañana)
+
+        print("")
+
 
     write_data('pronosticos.csv',results) # muestra los resultados
-
-
-    #print(round(((1+(z)/100)*Hoy),2))
-    ### Prediccion del dia anterior
-        #imputs valor, Prices1[len(Prices1-1)],Prices2[len(Prices2-1)],Prices3[len(Prices3-1)]
-    #write_data('results.csv',prices)
-
+    
