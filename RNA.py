@@ -123,7 +123,7 @@ def computeNumericalGradient(N, X, y):
         paramsInitial = N.getParams()
         numgrad = np.zeros(paramsInitial.shape)
         perturb = np.zeros(paramsInitial.shape)
-        e = 1e-4 # error tolerado
+        e = 1e-4 # Valor de perturbacion
 
         for p in range(len(paramsInitial)):
             #Set perturbation vector
@@ -162,8 +162,9 @@ class trainer(object):
         grad = self.N.computeGradients(X,y)
         return cost, grad
         
-    def train(self, X, y):
+    def train(self, X, y, tol):
         #Make an internal variable for the callback function:
+        self.tol = tol
         self.X = X
         self.y = y
 
@@ -172,12 +173,11 @@ class trainer(object):
         
         params0 = self.N.getParams()
 
-        options = {'maxiter': 200} #'disp' : True para mostrar mensajes de convergencia
+        options = {'maxiter': 200,'gtol': tol,'disp': True} #'disp' : True para mostrar mensajes de convergencia
         _res = optimize.minimize(self.costFunctionWrapper, params0, jac=True, method='BFGS', \
                                  args=(X, y), options=options, callback=self.callbackF)
-
         self.N.setParams(_res.x)
-        self.optimizationResults = _res
+        self.optimizationResults = _res   
         
         
 if __name__ == "__main__":
@@ -186,7 +186,8 @@ if __name__ == "__main__":
     T = trainer(NN)
     get_data('RNA.csv')
 
-    varmax = np.amax(varianzag, axis=0)
+    varmax = np.amax( np.abs(varianzag), axis=0)
+    varmin = np.amin( varianzag, axis=0)
     #varianzag = varianzag/np.amax(varianzag, axis=0)
     preciog = preciog/np.amax(preciog, axis=0)
     preciom = preciom/np.amax(preciom, axis=0)
@@ -202,7 +203,7 @@ if __name__ == "__main__":
         P = []
         Y = np.array(( [preciom[y],preciog[y], precioa[y], preciof[y]],[preciom[y+1],preciog[y+1], precioa[y+1], preciof[y+1]],[preciom[y+2],preciog[y+2], precioa[y+2], preciof[y+2]] ) ,dtype=float)
         P = np.array(([varianzag[y]],[varianzag[y+1]],[varianzag[y+2]]), dtype=float)
-        T.train(Y,P)
+        T.train(Y,P,0.05)#Y,P y porcentaje de tolerancia
 
     print("Entrenamiento Completado")
 
@@ -210,30 +211,32 @@ if __name__ == "__main__":
 
     preciofn = preciofn/np.amax(preciofn, axis=0)
     precioan = precioan/np.amax(precioan, axis=0)
-    vara = varianzag[len(varianzag)-1 ]
+    vara = varianzag[len(varianzag)-1]
     Hoy = preciog[len(preciog)-1]/(np.amax(preciog, axis=0))
 
-    print(vara)
-    print(varmax)
     Hoye = Hoy
     Actual = 851.08
 
+    print(vara,len(varianzag)-1)
+    print(varmax)
+    print(varmin)
+
     for x in range(1,len(precioan)):  
 
-        print("")
+        #print("")
         Z = np.array( ([vara,Hoye,precioan[x],preciofn[x]]) ,dtype=float)
         z = NN.forward(Z)
         #print(Z)
         #print(vara,x,"Entrada")
-        variacionmañana=((z)*varmax-(varmax/2))
+        variacionmañana=(2*(varmax-varmin)*(z-0.5))# seccion critica
         #print(variacionmañana,"Salida")
         Actual =(1+variacionmañana)*Actual
-        print(Actual,"Precio")
+        #print(Actual,"Precio")
         results.append(Actual)
         vara = variacionmañana
         Hoye = Hoye*(1+variacionmañana)
+        #print("")
 
-        print("")
 
 
     write_data('pronosticos.csv',results) # muestra los resultados
