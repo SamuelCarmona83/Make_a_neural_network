@@ -1,7 +1,7 @@
 
 import numpy as np
 import csv
-
+import time
 
 varianzag = [] # precios de cierre de la accion de google
 preciog = [] # precios apertura de la accion de google
@@ -188,6 +188,7 @@ if __name__ == "__main__":
 
     varmax = np.amax( varianzag , axis=0)
     varmin = np.amin( varianzag, axis=0)
+    varianzag = varianzag/np.amax(np.abs(varianzag),axis=0)
     preciog = preciog/np.amax(preciog, axis=0)
     preciom = preciom/np.amax(preciom, axis=0)
     preciof = preciof/np.amax(preciof, axis=0)
@@ -197,14 +198,20 @@ if __name__ == "__main__":
 
     NN = Neural_Network()
     T = trainer(NN)
+    #Empieza el contador de tiempo
+    start = time.time()
     for y in range(0,len(varianzag)-1,3):
         Y = []
         P = []
         Y = np.array(( [preciom[y],preciog[y], precioa[y], preciof[y]],[preciom[y+1],preciog[y+1], precioa[y+1], preciof[y+1]],[preciom[y+2],preciog[y+2], precioa[y+2], preciof[y+2]] ) ,dtype=float)
         P = np.array(([varianzag[y]],[varianzag[y+1]],[varianzag[y+2]]), dtype=float)
-        T.train(Y,P,0.10)#Y,P y porcentaje de tolerancia
+        T.train(Y,P,1e-4)#Y,P y porcentaje de tolerancia
+    end = time.time()
 
+    print("")
     print("Entrenamiento Completado")
+    print(end - start)
+    print("")
 
     get_data_test('Entrenamiento.csv') 
 
@@ -229,16 +236,16 @@ if __name__ == "__main__":
         print(Z, "vector de entrada")
         print(vara,x,"Entrada")
 
-        variacionmañana=(z)# seccion critica
+        variacionmañana=(2*(varmax+np.abs(varmin))*(2*z-1))# seccion critica
         
         print(z, "Salida de la RNA")
         print(variacionmañana,"Salida")
 
         Actual =(1+variacionmañana)*Actual
         #print(Actual,"Precio")
-        results.append(Actual)
+        results.append(variacionmañana)
         vara = variacionmañana
-        Hoye = Actual
+        Hoye = Actual/(np.amax(preciog, axis=0))
         print("")
 
 
