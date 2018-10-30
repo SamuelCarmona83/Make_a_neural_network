@@ -61,11 +61,11 @@ class Neural_Network(object):
         
         #Weights (parameters)
         self.W1 = np.random.randn(self.inputLayerSize,self.hiddenLayerSize)
-        print(self.W1)
-        print("")
+        #print(self.W1)
+        #print("")
         self.W2 = np.random.randn(self.hiddenLayerSize,self.outputLayerSize)
-        print(self.W2)
-        print("")
+        #print(self.W2)
+        #print("")
 
     def forward(self, X):
         #Propogate inputs though network nhidden - 1 dots
@@ -182,7 +182,7 @@ class trainer(object):
         
         
 if __name__ == "__main__":
-    print("")
+
     NN = Neural_Network()
     T = trainer(NN)
     get_data('RNA.csv')
@@ -206,12 +206,11 @@ if __name__ == "__main__":
         P = []
         Y = np.array(( [preciom[y],preciog[y], precioa[y], preciof[y]],[preciom[y+1],preciog[y+1], precioa[y+1], preciof[y+1]],[preciom[y+2],preciog[y+2], precioa[y+2], preciof[y+2]] ) ,dtype=float)
         P = np.array(([varianzag[y]],[varianzag[y+1]],[varianzag[y+2]]), dtype=float)
-        T.train(Y,P,0.1)#Y,P y porcentaje de tolerancia
+        T.train(Y,P,0.05)#Y,P y porcentaje de tolerancia
     end = time.time()
 
     print("")
     print("Entrenamiento Completado")
-    print(end - start)
     print("")
 
     get_data_test('Entrenamiento.csv') 
@@ -224,14 +223,10 @@ if __name__ == "__main__":
     Hoye = Hoy
     Actual = 851.08
 
-    print(vara,len(varianzag)-1)
-    print(varmax, "Varianza Maxima positiva")
-    print(np.abs(varmin), "Varianza Minima")
-    print(np.abs(varmin)+varmax, "Amplitud de Salida")
 
     for x in range(1,len(precioan)):  
 
-        print("")
+        #print("")
         Z = np.array( ([vara,Hoye,precioan[x],preciofn[x]]) ,dtype=float)
         z = NN.forward(Z)
         #print(Z, "vector de entrada")
@@ -244,18 +239,22 @@ if __name__ == "__main__":
 
         variacionmañana = z
 
-        print(z, "Salida de la RNA")
+        #print(z, "Salida de la RNA")
         #print(variacionmañana,"Salida")
 
         Actual =(1+variacionmañana)*Actual
-        print(Actual,"Precio")
+        #print(Actual,"Precio")
         results.append(Actual)
         vara = variacionmañana
         Hoye = Hoye*(1+z)
-        print("")
+        #print("")
 
 
 
-    write_data('pronosticos10.csv',results) # muestra los resultados
+    write_data('pronosticos.csv',results) # muestra los resultados
     print(end - start, "Tiempo de Entrenamiento en segundos")
-#67b77bcc975933a58a797b05992e4fc40b327c78
+    print("")
+    print(np.mean(results, axis=0), "media de los pronosticos")
+    print("")
+    print(np.var(results, axis=0), "varianza de los pronosticos")
+    print("")
