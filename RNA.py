@@ -72,7 +72,8 @@ class Neural_Network(object):
         self.z2 = np.dot(X, self.W1)
         self.a2 = self.sigmoid(self.z2)
         self.z3 = np.dot(self.a2, self.W2)
-        yHat = self.sigmoid(self.z3) 
+        #yHat = self.sigmoid(self.z3/np.exp(-0.2085)) # Amplitud
+        yHat = np.tanh(self.z3)
         return yHat
         
     def sigmoid(self, z):
@@ -205,7 +206,7 @@ if __name__ == "__main__":
         P = []
         Y = np.array(( [preciom[y],preciog[y], precioa[y], preciof[y]],[preciom[y+1],preciog[y+1], precioa[y+1], preciof[y+1]],[preciom[y+2],preciog[y+2], precioa[y+2], preciof[y+2]] ) ,dtype=float)
         P = np.array(([varianzag[y]],[varianzag[y+1]],[varianzag[y+2]]), dtype=float)
-        T.train(Y,P,1e-4)#Y,P y porcentaje de tolerancia
+        T.train(Y,P,0.05)#Y,P y porcentaje de tolerancia
     end = time.time()
 
     print("")
@@ -236,14 +237,21 @@ if __name__ == "__main__":
         print(Z, "vector de entrada")
         print(vara,x,"Entrada")
 
+<<<<<<< HEAD
         variacionmañana=(z)# seccion critica
         
+=======
+        #variacionmañana=(2*(varmax+np.abs(varmin))*(z-0.05))# seccion critica
+
+        variacionmañana = z
+
+>>>>>>> df858d1b0b2ba6d06bf27493d56aed0a9b114f29
         print(z, "Salida de la RNA")
         print(variacionmañana,"Salida")
 
         Actual =(1+variacionmañana)*Actual
         #print(Actual,"Precio")
-        results.append(variacionmañana)
+        results.append(Actual)
         vara = variacionmañana
         Hoye = Hoye*(1+z)
         print("")
