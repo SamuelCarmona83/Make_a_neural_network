@@ -47,7 +47,7 @@ def write_data(filename, R ):
         writer.writeheader()
         for x in range( len(R)):
             if x>0:
-                writer.writerow( {'number': x, 'result': np.round(float(R[x]),12) } )
+                writer.writerow( {'number': x, 'result': float(R[x]) } )
             #else:
             #   writer.writerow( {'number': x, 'result': np.round(float(R[x]),4) } )
     return
@@ -236,7 +236,7 @@ if __name__ == "__main__":
         print(Z, "vector de entrada")
         print(vara,x,"Entrada")
 
-        variacionmañana=(2*(varmax+np.abs(varmin))*(2*z-1))# seccion critica
+        variacionmañana=(z)# seccion critica
         
         print(z, "Salida de la RNA")
         print(variacionmañana,"Salida")
@@ -245,7 +245,7 @@ if __name__ == "__main__":
         #print(Actual,"Precio")
         results.append(variacionmañana)
         vara = variacionmañana
-        Hoye = Actual/(np.amax(preciog, axis=0))
+        Hoye = Hoye*(1+z)
         print("")
 
 
