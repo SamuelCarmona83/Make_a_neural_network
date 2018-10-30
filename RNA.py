@@ -174,7 +174,7 @@ class trainer(object):
         
         params0 = self.N.getParams()
 
-        options = {'maxiter': 200,'gtol': tol,'disp': True} #'disp' : True para mostrar mensajes de convergencia
+        options = {'maxiter': 200,'gtol': tol } #'disp' : True para mostrar mensajes de convergencia
         _res = optimize.minimize(self.costFunctionWrapper, params0, jac=True, method='BFGS', \
                                  args=(X, y), options=options, callback=self.callbackF)
         self.N.setParams(_res.x)
@@ -206,7 +206,7 @@ if __name__ == "__main__":
         P = []
         Y = np.array(( [preciom[y],preciog[y], precioa[y], preciof[y]],[preciom[y+1],preciog[y+1], precioa[y+1], preciof[y+1]],[preciom[y+2],preciog[y+2], precioa[y+2], preciof[y+2]] ) ,dtype=float)
         P = np.array(([varianzag[y]],[varianzag[y+1]],[varianzag[y+2]]), dtype=float)
-        T.train(Y,P,0.05)#Y,P y porcentaje de tolerancia
+        T.train(Y,P,0.1)#Y,P y porcentaje de tolerancia
     end = time.time()
 
     print("")
@@ -234,23 +234,21 @@ if __name__ == "__main__":
         print("")
         Z = np.array( ([vara,Hoye,precioan[x],preciofn[x]]) ,dtype=float)
         z = NN.forward(Z)
-        print(Z, "vector de entrada")
-        print(vara,x,"Entrada")
+        #print(Z, "vector de entrada")
+        #print(vara,x,"Entrada")
 
-<<<<<<< HEAD
         variacionmañana=(z)# seccion critica
         
-=======
+
         #variacionmañana=(2*(varmax+np.abs(varmin))*(z-0.05))# seccion critica
 
         variacionmañana = z
 
->>>>>>> df858d1b0b2ba6d06bf27493d56aed0a9b114f29
         print(z, "Salida de la RNA")
-        print(variacionmañana,"Salida")
+        #print(variacionmañana,"Salida")
 
         Actual =(1+variacionmañana)*Actual
-        #print(Actual,"Precio")
+        print(Actual,"Precio")
         results.append(Actual)
         vara = variacionmañana
         Hoye = Hoye*(1+z)
@@ -258,5 +256,6 @@ if __name__ == "__main__":
 
 
 
-    write_data('pronosticos.csv',results) # muestra los resultados
+    write_data('pronosticos10.csv',results) # muestra los resultados
+    print(end - start, "Tiempo de Entrenamiento en segundos")
 #67b77bcc975933a58a797b05992e4fc40b327c78
