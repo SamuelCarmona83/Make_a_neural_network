@@ -42,12 +42,12 @@ def get_data_test(filename):
 
 def write_data(filename, R ):
     with open(filename, 'w') as csvfile:
-        fieldnames = ['number', 'result']
+        fieldnames = ['result']
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
         writer.writeheader()
         for x in range( len(R)):
             if x>0:
-                writer.writerow( {'number': x, 'result': float(R[x]) } )
+                writer.writerow( { 'result': float(R[x]) } )
             #else:
             #   writer.writerow( {'number': x, 'result': np.round(float(R[x]),4) } )
     return
@@ -57,7 +57,7 @@ class Neural_Network(object):
         #Define Hyperparameters
         self.inputLayerSize = 4
         self.outputLayerSize = 1
-        self.hiddenLayerSize = 2#8
+        self.hiddenLayerSize = 3#8
         
         #Weights (parameters)
         self.W1 = np.random.randn(self.inputLayerSize,self.hiddenLayerSize)
@@ -72,7 +72,7 @@ class Neural_Network(object):
         self.z2 = np.dot(X, self.W1)
         self.a2 = self.sigmoid(self.z2)
         self.z3 = np.dot(self.a2, self.W2)
-        #yHat = self.sigmoid(self.z3/np.exp(-0.2085)) # Amplitud
+        #yHat = self.sigmoid(self.z3-0.5)) # Amplitud
         yHat = np.tanh(self.z3)
         return yHat
         
@@ -206,7 +206,7 @@ if __name__ == "__main__":
         P = []
         Y = np.array(( [preciom[y],preciog[y], precioa[y], preciof[y]],[preciom[y+1],preciog[y+1], precioa[y+1], preciof[y+1]],[preciom[y+2],preciog[y+2], precioa[y+2], preciof[y+2]] ) ,dtype=float)
         P = np.array(([varianzag[y]],[varianzag[y+1]],[varianzag[y+2]]), dtype=float)
-        T.train(Y,P,0.05)#Y,P y porcentaje de tolerancia
+        T.train(Y,P,0.1)#Y,P y porcentaje de tolerancia
     end = time.time()
 
     print("")
@@ -251,7 +251,7 @@ if __name__ == "__main__":
 
 
 
-    write_data('pronosticos.csv',results) # muestra los resultados
+    write_data('pronosticos10-'+str(end - start)+'.csv',results) # muestra los resultados
     print(end - start, "Tiempo de Entrenamiento en segundos")
     print("")
     print(np.mean(results, axis=0), "media de los pronosticos")
