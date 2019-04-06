@@ -2,6 +2,8 @@
 import numpy as np
 import csv
 import time
+import matplotlib.pyplot as plt
+from tkinter import *
 
 varianzag = [] # precios de cierre de la accion de google
 preciog = [] # precios apertura de la accion de google
@@ -185,12 +187,13 @@ if __name__ == "__main__":
 
     NN = Neural_Network()
     T = trainer(NN)
-    get_data('RNA.csv')
+    get_data('RNA2.csv')
 
-    varmax = np.amax( varianzag , axis=0)
-    varmin = np.amin( varianzag, axis=0)
+    varmax = np.amax( np.abs(varianzag) , axis=0)
+    varmin = np.amin( np.abs(varianzag), axis=0)
     varianzag = varianzag/np.amax(np.abs(varianzag),axis=0)
     preciog = preciog/np.amax(preciog, axis=0)
+    preciom1 = preciom
     preciom = preciom/np.amax(preciom, axis=0)
     preciof = preciof/np.amax(preciof, axis=0)
     precioa = precioa/np.amax(precioa, axis=0)
@@ -221,7 +224,7 @@ if __name__ == "__main__":
     Hoy = preciog[len(preciog)-1]/(np.amax(preciog, axis=0))
 
     Hoye = Hoy
-    Actual = 851.08
+    Actual = preciom1[-1:]
 
 
     for x in range(1,len(precioan)):  
@@ -251,10 +254,24 @@ if __name__ == "__main__":
 
 
 
-    write_data('pronosticos10-'+str(end - start)+'.csv',results) # muestra los resultados
+    write_data('pronosticos.csv',results) # muestra los resultados
     print(end - start, "Tiempo de Entrenamiento en segundos")
     print("")
     print(np.mean(results, axis=0), "media de los pronosticos")
     print("")
     print(np.var(results, axis=0), "varianza de los pronosticos")
     print("")
+    print(varmax, "Variacion Max")
+    print("")
+    print(varmin, "Variacion Min")
+    
+    x2 = np.arange(len(preciom1))
+    x = np.arange(len(preciom1),len(results)+len(preciom1))
+
+    plt.plot(x, results, label='pronostico')
+    plt.plot(x2, preciom1, label='real')
+    plt.xlabel('dias')
+    plt.ylabel('precio de la accion')
+    plt.legend()
+    plt.tight_layout()
+    plt.show()
