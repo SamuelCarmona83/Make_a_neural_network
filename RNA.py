@@ -274,4 +274,5 @@ if __name__ == "__main__":
     plt.ylabel('precio de la accion')
     plt.legend()
     plt.tight_layout()
-    plt.show()
+    plt.savefig('grafica.png')
+    #plt.show()
